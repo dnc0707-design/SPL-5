@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SPL-5 Player Registration</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f5f7fa;
+      padding: 20px;
+    }
+    h2 {
+      text-align: center;
+      color: #d32f2f;
+      margin-bottom: 10px;
+    }
+    .qr-container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      max-width: 500px;
+      margin: 0 auto;
+    }
+    .qr-container img {
+      width: 110px;
+      height: 110px;
+      object-fit: contain;
+      border: 2px solid #ccc;
+      border-radius: 10px;
+      background: white;
+      padding: 5px;
+    }
+    .qr-caption {
+      text-align: center;
+      font-weight: bold;
+      color: #2e7d32;
+      margin-top: 8px;
+      margin-bottom: 15px;
+      font-size: 16px;
+    }
+    form {
+      max-width: 500px;
+      margin: auto;
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px #ccc;
+    }
+    input, select {
+      width: 100%;
+      padding: 10px;
+      margin: 8px 0;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+    button {
+      width: 100%;
+      background: #1976d2;
+      color: white;
+      padding: 12px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+    button:hover {
+      background: #0d47a1;
+    }
+    label {
+      font-weight: bold;
+      display: block;
+      margin-top: 10px;
+    }
+    #successScreen {
+      display: none;
+      text-align: center;
+      background: white;
+      max-width: 500px;
+      margin: auto;
+      padding: 40px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px #ccc;
+    }
+    #successScreen h3 {
+      color: #2e7d32;
+      font-size: 22px;
+      margin-bottom: 10px;
+    }
+    #successScreen p {
+      font-size: 18px;
+    }
+  </style>
+</head>
+<body>
+  
+<h2 style="
+  text-align:center;
+  font-size:26px;
+  font-weight:900;
+  color:#d32f2f;
+  margin-bottom:20px;
+  text-transform:uppercase;
+  letter-spacing:1px;
+">
+  🏏 SPL-5 Player Registration Form
+</h2>
+  <!-- QR Code Section (Two small corners) -->
+
+<div style="text-align:center; margin-bottom:15px;">
+  <img 
+    src="qr.png"
+    alt="Payment QR"
+    style="
+      width:200px;
+      height:200px;
+      object-fit:contain;
+      border:2px solid #ccc;
+      border-radius:15px;
+      background:white;
+      padding:10px;
+      box-shadow:0 0 10px rgba(0,0,0,0.15);
+    "
+  >
+  <div style="
+    text-align:center;
+    font-weight:bold;
+    color:#2e7d32;
+    font-size:17px;
+    margin-top:10px;
+  ">
+    📱 Scan & Pay ₹50 Registration Fee before form submission
+  </div>
+</div>
+  
+  <!-- Registration Form -->
+  <form id="playerForm" enctype="multipart/form-data">
+    <input type="text" name="name" placeholder="Name" required />
+    <input type="number" name="age" placeholder="Age" required />
+
+    <select name="skill" required>
+      <option value="">Select Skill</option>
+      <option>Batsman</option>
+      <option>Bowler</option>
+      <option>Allrounder</option>
+    </select>
+
+    <select name="block" required>
+      <option value="">Select Block</option>
+      <option>Santuri</option>
+      <option>Saltora</option>
+      <option>Nituria</option>
+      <option>Raghunathpur-1</option>
+      <option>Raghunathpur Municipality</option>
+    </select>
+
+    <input type="text" name="village" placeholder="Village" required />
+    <input type="text" name="mobile" placeholder="Mobile (WhatsApp)" required />
+
+    <label>Payment Screenshot (₹50)</label>
+    <input type="file" name="paymentScreenshot" accept="image/*" required />
+
+    <label>Aadhaar Front Side</label>
+    <input type="file" name="aadhaarProof" accept="image/*" required />
+
+    <label>Aadhaar Back Side</label>
+    <input type="file" name="aadhaarBack" accept="image/*" required />
+
+    <label>Passport Size Photo</label>
+    <input type="file" name="photo" accept="image/*" required />
+
+    <button type="submit">Submit</button>
+  </form>
+
+  <!-- Success Screen -->
+  <div id="successScreen">
+    <h3>✅ Form Fill-up Completed!</h3>
+    <p id="applicantName"></p>
+    <p id="tempRegNo"></p>
+  </div>
+
+  <script>
+    const scriptURL = "https://script.google.com/macros/s/AKfycbxI6x78ZIk_WtIbBtyNpHQa7-60C0yy50tPoq73Dnj71dPQOFEonM084WerlXBg7KBRWw/exec";
+
+    document.getElementById("playerForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const form = e.target;
+      const formData = new FormData(form);
+
+      try {
+        const res = await fetch(scriptURL, { method: "POST", body: formData });
+        const text = await res.text();
+
+        if (text.startsWith("success")) {
+          const parts = text.split("|");
+          const name = parts[1];
+          const regNo = parts[2];
+
+          form.style.display = "none";
+          document.body.innerHTML += `
+            <div style="text-align:center; margin-top:50px;">
+              <h2 style="color:green;">🎉 Form Fill-Up Completed 🎉</h2>
+              <h3>Dear ${name},</h3>
+              <p>Your Temporary Registration No. is <b>${regNo}</b></p>
+            </div>`;
+        } else {
+          alert("Submission failed: " + text);
+        }
+      } catch (err) {
+        alert("Error submitting form: " + err.message);
+      }
+    });
+  </script>
+</body>
+</html>
